@@ -1,0 +1,19 @@
+FROM alpine:latest AS base
+
+RUN apk update \
+    && apk add python3 \
+    && apk add python3 py3-pip \
+    && apk add py3-flask \
+
+
+
+FROM alpine:latest
+
+RUN apk add python3
+
+COPY --from=base /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
+COPY --from=base /usr/local/bin/ /usr/local/bin/
+
+EXPOSE 30123
+
+CMD python3 app.py
