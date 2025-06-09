@@ -1,18 +1,35 @@
-FROM alpine:latest AS base
+FROM python:3.13-slim AS builder
 
-RUN apk update \
-    && apk add python3 \
-    && apk add python3 py3-pip \
-    && apk add py3-flask \
+RUN mkdir /app
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1 
+
+RUN pip install --upgrade pip
+
+RUN pip install flask
 
 
 
-FROM alpine:latest
+FROM python:3.13-slim
+ 
+RUN useradd -m -r appuser && \
+   mkdir /app && \
+   chown -R appuser /app
 
-RUN apk add python3
+COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
-COPY --from=base /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
-COPY --from=base /usr/local/bin/ /usr/local/bin/
+WORKDIR /app
+
+COPY --chown=appuser:appuser . .
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1 
+
+USER appuser
 
 EXPOSE 30123
 
