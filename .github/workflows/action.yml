@@ -13,10 +13,10 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Build Docker image
-        run: docker build -t dockerfile_flask .
+        run: docker build -t docker_flask -f dockerfile_flask .
         
       - name: Run container and check functionality
-        run: docker run -d -p 30123:30123 --rm --name docker_test dockerfile_flask
+        run: docker run -d -p 30123:30123 --rm --name docker_test docker_flask
         
       - name: Wait for Flask to start
         run: sleep 5
