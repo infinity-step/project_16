@@ -1,0 +1,23 @@
+name: Validate Kubernetes Manifests
+
+on: [push, pull_request]
+
+jobs:
+  kubeconform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Kubeconform
+        run: |
+          curl -L -o kubeconform https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64
+          chmod +x kubeconform
+          mv kubeconform /usr/local/bin/
+          kubeconform -v
+
+      - name: Validate manifests
+        run: |
+          find "./k8s-manifests" -name "*.yaml" -print0 | xargs -0 kubeconform -strict -summary
+
+        
