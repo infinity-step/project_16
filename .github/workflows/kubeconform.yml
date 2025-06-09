@@ -26,7 +26,6 @@ jobs:
         with:
           webhook: ${{ secrets.SLACK_TOKEN }}
           webhook-type: incoming-webhoo
-          message: "Результат проверки: ${{ env.KUBECONFORM_RESULT }}"
           payload: |
             {
               "blocks": [
