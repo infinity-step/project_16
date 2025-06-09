@@ -14,10 +14,18 @@ jobs:
           wget https://github.com/yannh/kubeconform/releases/download/v0.7.0/kubeconform-linux-amd64.tar.gz
           tar -C /usr/local/bin/ -xzf  kubeconform-linux-amd64.tar.gz
           rm kubeconform-linux-amd64.tar.gz
-          kubeconform -v
 
       - name: Validate manifests
         run: |
-          find "./k8s-manifests" -name "*.yaml" -print0 | xargs -0 kubeconform -strict -summary
+          RESULT=$(find ./k8s-manifests -name "*.yaml" -print0 | xargs -0 kubeconform -strict -summary || echo "FAILED")
+          echo "KUBECONFORM_RESULT=${RESULT}" >> $GITHUB_ENV
+          
+      - name: Send Slack Notification
+        if: always()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          slack-token: ${{ secrets.SLACK_TOKEN }}
+          channel-name: "courses_notifications"
+          message: "Результат проверки: ${{ env.KUBECONFORM_RESULT }}"
 
         
