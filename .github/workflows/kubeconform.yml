@@ -27,5 +27,38 @@ jobs:
           webhook: ${{ secrets.SLACK_TOKEN }}
           webhook-type: incoming-webhoo
           message: "Результат проверки: ${{ env.KUBECONFORM_RESULT }}"
-
-        
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":mag: *Результат проверки Kubernetes манифестов*"
+                  }
+                },
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Статус:* ${{ env.KUBECONFORM_RESULT }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Коммит:* ${{ github.sha }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Файлы:* \n$(find ./k8s-manifests -name "*.yaml" | awk '{print "- " $1}' | tr '\n' ' ')"
+                  }
+                }
+              ]
+            }
