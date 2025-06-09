@@ -28,6 +28,6 @@ jobs:
         run: time curl -s -o /dev/null http://localhost:30123
 
       - name: Check root access inside container
-        run: docker exec test-container id -u | grep -q 0 && echo "Running as root" || echo "Not running as root"
+        run: docker exec docker_test id -u | grep -q 0 && echo "Running as root" || echo "Not running as root"
 
         
