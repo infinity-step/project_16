@@ -22,42 +22,38 @@ jobs:
           
       - name: Send Slack Notification
         if: always()
-        uses: slackapi/slack-github-action@v2.0.0
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ":mag: *Результат проверки Kubernetes манифестов*"
-                  }
-                },
-                {
-                  "type": "divider"
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Статус:* ${{ env.KUBECONFORM_RESULT }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Коммит:* ${{ github.sha }}"
-                    }
-                  ]
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Файлы:* \n$(find ./k8s-manifests -name "*.yaml" | awk '{print "- " $1}' | tr '\n' ' ')"
-                  }
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "blocks": [
+              {
+                "type": "section",
+                 "text": {
+                  "type": "mrkdwn",
+                  "text": ":mag: *Результат проверки Kubernetes манифестов*"
                 }
-              ]
-            }
+              },
+              {
+                "type": "divider"
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Статус:* ${{ env.KUBECONFORM_RESULT }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Коммит:* ${{ github.sha }}"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*Файлы:* \n$(find ./k8s-manifests -name "*.yaml" | awk '{print "- " $1}' | tr '\n' ' ')"
+                }
+              }
+            ]
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
