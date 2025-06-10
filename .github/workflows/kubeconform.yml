@@ -48,12 +48,5 @@ jobs:
                   }
                 ]
               },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "*Файлы:* \n$(find ./k8s-manifests -name "*.yaml" | awk '{print "- " $1}' | tr '\n' ' ')"
-                }
-              }
             ]
           }' ${{ secrets.SLACK_WEBHOOK_URL }}
